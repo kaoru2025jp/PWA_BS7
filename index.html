@@ -161,13 +161,13 @@ async function calc() {
      const SX2 = (B * (T1 / T2) - O2) / ((T1/T2) * Math.exp(-r * 0.95));
 
 
-    box.innerHTML = `
+    box.innerHTML = 
      
       <hr>
       <div>SX1: ${SX1.toFixed(6)}</div>
       <div>SX2: ${SX2.toFixed(6)}</div>
      
-    `;
+    ;
   } catch (e) {
     box.innerHTML = 'エラー';
   }
