@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>計算エンジン</title>
+
+<style>
+body {
+  font-family: sans-serif;
+  background: #eef2ff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+}
+
+.container {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  width: 320px;
+}
+
+.logo {
+  font-size: 60px;
+  text-align: center;
+}
+
+h2 {
+  text-align: center;
+}
+
+input {
+  width: 100%;
+  margin: 5px 0;
+  padding: 10px;
+}
+
+button {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+}
+
+.loading::after {
+  content: "";
+  display: block;
+  margin: 10px auto;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #ccc;
+  border-top: 3px solid blue;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- 👇ここがロゴ（スマホに変更済み） -->
+  <img src="https://img.icons8.com/ios/50/calculator.png" class="logo">
+
+  <h2>計算エンジン</h2>
+
+  <input id="B" placeholder="B">
+  <input id="S" placeholder="S">
+  <input id="O1" placeholder="O1">
+  <input id="O2" placeholder="O2">
+  <input id="r" placeholder="r">
+ 
+
+  <button onclick="calc()">計算する</button>
+
+  <div id="resultBox"></div>
+
+</div>
+<div style="margin-top:10px;">
+  <button onclick="showSection('econ')">経済モデル</button>
+  <button onclick="showSection('law')">法的整理</button>
+</div>
+<div id="econ">
+  <h3>有価証券間の価格関係と評価構造</h3>
+  有価証券間の価格関係と評価構造
+
+本モデルにおける S1・S2・SX は、有価証券市場における価格形成と交換関係を多面的に捉えるための指標として位置づけられる。
+
+まず、S1 と S2 は市場における二つの価格水準を表す。
+両者がいずれも独占的価格に近い状況にある場合、その乖離は限定的となり、大きな差異は生じにくいと考えられる。
+一方で、S1 と S2 の間に顕著な価格差が存在する場合、一方が独占的価格、他方が競争的市場価格に属するという「二重構造」が成立している可能性がある。
+
+このような状況においては、S1 と S2 の関係は単純な比較ではなく、ポートフォリオ的な相互関係として捉える必要がある。
+さらに、時系列的に観察した場合、両価格は政府証券に対して正の相関を持つことが期待される。
+これは、金融市場全体の資金循環や信用供給が拡大している局面において、価格が動学的に上昇方向へ推移することを意味する。
+
+しかしながら、政府証券の発行が限定的であり、S1 および S2 が安定的な価格帯に留まる場合には、直接的な価格調整ではなく、オプション的コストを介した交換関係が成立する余地がある。
+このとき、SX は中立的な評価指標として機能し、市場の実勢、特に銀行など金融仲介機関による割引評価と整合的である必要がある。
+
+したがって、SX は単なる補助変数ではなく、金融市場における中心的な価格調整メカニズムを反映する指標として理解されるべきである。
+</div>
+
+<div id="law" style="display:none;">
+  <h4>法的整理（モデル的条文）</h4>
+  法的整理（モデル的条文）
+
+<p>第1条</p>
+S1 または S2 のいずれかを、有価証券の交換価格として選択することができる。
+
+<p>第2条</p>
+SX は、抵当権の償却価格として採用することができる。
+
+<p>第3条</p>
+前条の価格を採用した場合、当該取引において発生するオプション的コストは、市場コストとして認識される。
+
+<p>第4条</p>
+S1・S2・SX の各価格は、融資の直接的な斡旋価格として用いることはできない。
+
+<p>第5条</p>
+本取引において仲介的役割を果たす主体は、政府証券（B）および関連有価証券（S1・S2）に基づく価格差に対し、一定の取り分を設定することができる。
+</div>
+
+
+
+
+
+<script>
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwIundUa2w_ZijiBK0d5Krf1icFSgPCpu_bxLlraQ4eiylB4jd6qRxwmYgBiaY7Oopu/exec";
+
+async function calc() {
+  const B = Number(document.getElementById("B").value);
+  const S = Number(document.getElementById("S").value);
+  const O1 = Number(document.getElementById("O1").value);
+  const O2 = Number(document.getElementById("O2").value);
+  const r = Number(document.getElementById("r").value);
+ 
+
+  const box = document.getElementById("resultBox");
+  box.innerHTML = '<div class="loading">計算中...</div>';
+
+  try {
+    const res = await fetch(GAS_URL, {
+      method: "POST",
+      body: JSON.stringify({ B, S, T1, T2 })
+    });
+
+    const data = await res.json();
+
+    const T1 = Number(data.T1);
+    const T2 = Number(data.T2);
+
+    const SX1 = (B * (T1 / T2) - O1) / ((T1/T2) * Math.exp(-r * 0.95));
+
+     const SX2 = (B * (T1 / T2) - O2) / ((T1/T2) * Math.exp(-r * 0.95));
+
+
+    box.innerHTML = `
+     
+      <hr>
+      <div>SX1: ${SX1.toFixed(6)}</div>
+      <div>SX2: ${SX2.toFixed(6)}</div>
+     
+    `;
+  } catch (e) {
+    box.innerHTML = 'エラー';
+  }
+}
+
+function showSection(type) {
+  document.getElementById("econ").style.display = "none";
+  document.getElementById("law").style.display = "none";
+
+  document.getElementById(type).style.display = "block";
+}
+</script>
+
+</body>
+</html>
